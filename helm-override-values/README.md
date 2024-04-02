@@ -52,6 +52,6 @@ global:
 
 ### To override repo URLs and to disable unused components
 
-Please revivew the attached file:
+Please review the attached file:
 
 ```override_repo.yaml```
