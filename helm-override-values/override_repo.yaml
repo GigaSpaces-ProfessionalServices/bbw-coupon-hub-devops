@@ -1,0 +1,62 @@
+global:
+  security:
+    enabled: false
+    # global (admin) password is expected to be given in installation
+    password:
+
+#deploys di umbrella
+di:
+  enabled: false
+
+flink:
+  enabled: false
+  
+kafka:
+  enabled: false
+
+#kafka ui
+redpanda:
+  enabled: false
+
+
+
+service-creator:
+  image:
+    repository: 469201920232.dkr.ecr.eu-central-1.amazonaws.com/gigaspaces/mcs-service-creator
+    pullPolicy: Always
+#gigaspaces/mcs-service-creator:1.0.13
+
+service-operator:
+  image:
+    repository: 469201920232.dkr.ecr.eu-central-1.amazonaws.com/gigaspaces/mcs-service-operator
+#gigaspaces/mcs-service-operator:1.0.13
+
+spacedeck:
+  image:
+    repository: 469201920232.dkr.ecr.eu-central-1.amazonaws.com/gigaspaces/spacedeck
+#gigaspaces/spacedeck:1.1.39
+
+dgw:
+  image:
+    repository: 469201920232.dkr.ecr.eu-central-1.amazonaws.com/gigaspaces/smart-cache-enterprise
+#gigaspaces/smart-cache-enterprise:16.4.0
+
+manager:
+  image:
+    repository: 469201920232.dkr.ecr.eu-central-1.amazonaws.com/gigaspaces/smart-cache-enterprise
+#gigaspaces/smart-cache-enterprise:16.4.0
+
+
+#xap-operator
+operator:
+  image:
+    repository: 469201920232.dkr.ecr.eu-central-1.amazonaws.com/gigaspaces/cache-operator
+#gigaspaces/cache-operator:16.4.0
+    init:
+      repository: busybox:1.36.0
+      pullPolicy: Always
+#busybox:1.36.0
+  autoCleanup:
+    image:
+      repository: 469201920232.dkr.ecr.eu-central-1.amazonaws.com/gigaspaces/cache-operator-purge-job
+#gigaspaces/cache-operator-purge-job:16.4.0
