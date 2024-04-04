@@ -10,5 +10,5 @@ for NS in ${NAMESPACES[@]};do
    DIH="${NS}-dih"
    YAML="${NS}-override.yaml"  ##  allows having a dedicated override yaml for each namespace
    echo
-   echo helm install ${DIH} ${HELM_REPO}/dih --version ${DIH_VERSION} -f ./${YAML} # remove 'echo' run the command
+   echo helm install ${DIH} ${HELM_REPO}/dih --version ${DIH_VERSION} -f ./${YAML} -n ${NS} # remove 'echo' to run the command
 done
