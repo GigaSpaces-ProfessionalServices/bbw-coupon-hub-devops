@@ -18,45 +18,59 @@ kafka:
 redpanda:
   enabled: false
 
+#influxdb
+influxdb:
+  image:
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/influxdb 
+  
+#grafana
+grafana:
+  image:
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/grafana
+  sidecar:
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/k8s-sidecar
 
 
+#gigaspaces/mcs-service-creator:1.0.13
 service-creator:
   image:
-    repository: 469201920232.dkr.ecr.eu-central-1.amazonaws.com/gigaspaces/mcs-service-creator
-    pullPolicy: Always
-#gigaspaces/mcs-service-creator:1.0.13
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/mcs-service-creator
 
+#gigaspaces/mcs-service-operator:1.0.13
 service-operator:
   image:
-    repository: 469201920232.dkr.ecr.eu-central-1.amazonaws.com/gigaspaces/mcs-service-operator
-#gigaspaces/mcs-service-operator:1.0.13
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/mcs-service-operator
+  operatorConfig:
+  image: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/mcs-query-service:1.0.14
+  # "bitnami/kubectl" - service-operator - currently cannot be overridden 
+  
 
+
+#gigaspaces/spacedeck:1.1.39
 spacedeck:
   image:
-    repository: 469201920232.dkr.ecr.eu-central-1.amazonaws.com/gigaspaces/spacedeck
-#gigaspaces/spacedeck:1.1.39
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/spacedeck
 
+#gigaspaces/smart-cache-enterprise:16.4.0
 dgw:
   image:
-    repository: 469201920232.dkr.ecr.eu-central-1.amazonaws.com/gigaspaces/smart-cache-enterprise
-#gigaspaces/smart-cache-enterprise:16.4.0
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/smart-cache-enterprise
 
-manager:
-  image:
-    repository: 469201920232.dkr.ecr.eu-central-1.amazonaws.com/gigaspaces/smart-cache-enterprise
-#gigaspaces/smart-cache-enterprise:16.4.0
-
-
-#xap-operator
+#gigaspaces/cache-operator:16.4.0 (xap-operator)
 operator:
   image:
-    repository: 469201920232.dkr.ecr.eu-central-1.amazonaws.com/gigaspaces/cache-operator
-#gigaspaces/cache-operator:16.4.0
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/cache-operator
     init:
-      repository: busybox:1.36.0
-      pullPolicy: Always
-#busybox:1.36.0
+      repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/busybox
+ # "quay.io/minio/operator:5.0.5" - service-operator
+
+
+#gigaspaces/cache-operator-purge-job:16.4.0
   autoCleanup:
     image:
-      repository: 469201920232.dkr.ecr.eu-central-1.amazonaws.com/gigaspaces/cache-operator-purge-job
-#gigaspaces/cache-operator-purge-job:16.4.0
+      repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/cache-operator-purge-job
+
+
+# "alpine/openssl"  - xap-operator
+
+
