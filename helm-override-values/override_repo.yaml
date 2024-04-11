@@ -18,6 +18,32 @@ kafka:
 redpanda:
   enabled: false
 
+# Chart: dih/charts/xap-manager
+manager:
+  license: "Product=InsightEdge;Version=16.4;Type=ENTERPRISE;Customer=Bath_and_Body_Works_DEV;Expiration=2024-Dec-31;Hash=WsXSoPNONaQOkfOYlQPR"
+  image:
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/smart-cache-enterprise
+
+# Chart: dih/charts/xap-operator
+#gigaspaces/cache-operator:16.4.2
+operator:
+  license: "Product=InsightEdge;Version=16.4;Type=ENTERPRISE;Customer=Bath_and_Body_Works_DEV;Expiration=2024-Dec-31;Hash=WsXSoPNONaQOkfOYlQPR"
+  image:
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/cache-operator
+  init:
+    repository: busybox
+      #gigaspaces/cache-operator-purge-job:16.4.0
+  autoCleanup:
+    image:
+      repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/cache-operator-purge-job
+# alpine/openssl - currently cannot be overridden dih/charts/xap-operator/templates/deployment.yaml
+
+#Chart: dih/charts/spacedeck
+#gigaspaces/spacedeck:1.1.39
+spacedeck:
+  image:
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/spacedeck
+
 #influxdb
 influxdb:
   image:
@@ -30,12 +56,6 @@ grafana:
   sidecar:
     repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/k8s-sidecar
 
-
-#gigaspaces/mcs-service-creator:1.0.13
-service-creator:
-  image:
-    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/mcs-service-creator
-
 #gigaspaces/mcs-service-operator:1.0.13
 service-operator:
   image:
@@ -43,34 +63,8 @@ service-operator:
   operatorConfig:
   image: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/mcs-query-service:1.0.14
   # "bitnami/kubectl" - service-operator - currently cannot be overridden 
-  
 
-
-#gigaspaces/spacedeck:1.1.39
-spacedeck:
+#gigaspaces/mcs-service-creator:1.0.13
+service-creator:
   image:
-    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/spacedeck
-
-#gigaspaces/smart-cache-enterprise:16.4.0
-dgw:
-  image:
-    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/smart-cache-enterprise
-
-#gigaspaces/cache-operator:16.4.0 (xap-operator)
-operator:
-  image:
-    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/cache-operator
-    init:
-      repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/busybox
- # "quay.io/minio/operator:5.0.5" - service-operator
-
-
-#gigaspaces/cache-operator-purge-job:16.4.0
-  autoCleanup:
-    image:
-      repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/cache-operator-purge-job
-
-
-# "alpine/openssl"  - xap-operator
-
-
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/mcs-service-creator
