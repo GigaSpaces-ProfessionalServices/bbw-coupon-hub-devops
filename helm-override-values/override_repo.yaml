@@ -58,6 +58,7 @@ grafana:
 
 #gigaspaces/mcs-service-operator:1.0.13
 service-operator:
+  enabled: false
   image:
     repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/mcs-service-operator
   operatorConfig:
@@ -66,5 +67,6 @@ service-operator:
 
 #gigaspaces/mcs-service-creator:1.0.13
 service-creator:
+  enabled: false
   image:
     repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/mcs-service-creator
