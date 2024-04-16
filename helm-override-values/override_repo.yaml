@@ -18,9 +18,19 @@ kafka:
 redpanda:
   enabled: false
 
+<<<<<<< HEAD
+#grafana
+grafana:
+  enabled: true
+  securityContext:
+    runAsNonRoot: true
+
+service-creator:
+=======
 # Chart: dih/charts/xap-manager
 manager:
   license: "Product=InsightEdge;Version=16.4;Type=ENTERPRISE;Customer=Bath_and_Body_Works_DEV;Expiration=2024-Dec-31;Hash=WsXSoPNONaQOkfOYlQPR"
+>>>>>>> b57c5b6c1f14716366852955d5e69f2cf9e61dd5
   image:
     repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/smart-cache-enterprise
 

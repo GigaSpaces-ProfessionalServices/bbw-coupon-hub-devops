@@ -37,7 +37,7 @@ For example, to override the disable global security (enabled by default):
 
 ```helm install dih dih/dih --version 16.4.2 --set=global.security.enabled=false```
 
-### Overide helm chart via yaml file
+### Override helm chart via yaml file
 
 ```helm install dih dih/dih --version 16.4.2 -f /path/to/values.yaml```
 
