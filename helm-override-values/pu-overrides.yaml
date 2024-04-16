@@ -1,0 +1,13 @@
+image:
+  repository: "harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/smart-cache-enterprise"
+schema: partitioned
+partitions: 2
+ha: true
+resources:
+  limits:
+    memory: 4Gi
+
+global:
+  imagePullSecrets:
+   - myregistrysecret
+

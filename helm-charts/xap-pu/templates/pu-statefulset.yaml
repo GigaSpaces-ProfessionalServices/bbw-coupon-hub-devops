@@ -1,0 +1,51 @@
+apiVersion: gigaspaces.com/v1
+kind: ProcessingUnit
+metadata:
+  name: {{ template "xap-pu.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    release: {{ .Release.Name }}
+spec:
+  productType: xap
+  antiAffinity: {{  .Values.antiAffinity.enabled }}
+  env: {{ toYaml .Values.env | nindent 4 }}
+  envFrom: {{ toYaml .Values.envFrom | nindent 4 }}
+  ha: {{  .Values.ha }}
+  {{- include "xap-pu.imagePullSecrets" . | nindent 2 }}
+  image:
+    pullPolicy: "{{  .Values.image.pullPolicy }}"
+    repository: "{{  .Values.image.repository }}"
+    tag: "{{  .Values.image.tag }}"
+  instances: {{  .Values.instances }}
+  javaHeap: {{  .Values.java.heap }}
+  {{- if .Values.java.options }}
+  javaOptions: {{ .Values.java.options }}
+  {{- end }}
+  license: {{  .Values.license }}
+  livenessProbe: {{ toYaml  .Values.livenessProbe | nindent 4 }}
+  securityService: {{ toYaml .Values.securityService | nindent 4 }}
+  manager: {{ toYaml .Values.manager | nindent 4 }}
+  multiCast: false
+  {{- if  .Values.nodeSelector.enabled }}
+  nodeSelector:
+    enabled: {{ .Values.nodeSelector.enabled }}
+    selector: {{ .Values.nodeSelector.selector }}
+  {{- end }}
+  partitions: {{  .Values.partitions }}
+  properties: {{ toYaml .Values.properties | nindent 4 }}
+  propertiesFrom: {{ toYaml .Values.propertiesFrom | nindent 4 }}
+  readinessProbe: {{ toYaml  .Values.readinessProbe | nindent 4 }}
+  resourceUrl: {{ .Values.resourceUrl }}
+  resources:
+    limits:
+      {{- if  .Values.resources.limits.cpu }}
+      cpu: {{  .Values.resources.limits.cpu }}
+      {{- end }}
+      memory: {{  .Values.resources.limits.memory}}
+    requests: null
+  persistence: {{ toYaml  .Values.persistence | nindent 4 }}
+  volumeMounts: {{ toYaml  .Values.volumeMounts | nindent 4 }}
+  {{- if  .Values.statefulSetExtension.enabled }}
+  statefulSetExtension:
+    spec: {{ toYaml  .Values.statefulSetExtension.spec | nindent 6 }}
+  {{- end }}

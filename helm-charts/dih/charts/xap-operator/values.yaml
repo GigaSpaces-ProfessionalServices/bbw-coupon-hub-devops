@@ -1,0 +1,73 @@
+# Default values for xap-operator.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+global:
+  security:
+    enabled: true
+  xap:
+    security:
+      service:
+        name: xap-security
+        port: 9000
+nameOverride: xap-operator
+image:
+  repository: gigaspaces/cache-operator
+  tag: 16.4.2
+  pullPolicy: IfNotPresent
+  init:
+    repository: "harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/busybox"
+    tag: 1.36.0
+terminationGracePeriodSeconds: 30
+delay: false
+podAnnotations: {}
+podSecurityContext: {}
+# fsGroup: 2000
+
+securityContext: {}
+# capabilities:
+#   drop:
+#   - ALL
+# readOnlyRootFilesystem: true
+# runAsNonRoot: true
+# runAsUser: 1000
+
+license: tryme
+manager:
+  name: xap-manager
+  port: 8090
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+nodeSelector: {}
+tolerations: []
+affinity: {}
+antiAffinity:
+  #  default "topology.kubernetes.io/zone"
+  topology:
+keystore:
+  enabled: false
+  secretName: nameOfSecret
+  password: nameOfLiteralItemInSecretRepresentsPassword
+  fileName: nameOfFileItemInSecretRepresentsKeystore
+  keystoreType: PKCS12
+autoCleanup:
+  enabled: true
+  #  default timeout: 30s
+  timeoutSeconds: 30
+  image:
+    repository: gigaspaces/cache-operator-purge-job
+resources: {}
+webhook:
+  ca: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURRakNDQWlxZ0F3SUJBZ0lKQU9HRDFrQ1NIc0ZyTUEwR0NTcUdTSWIzRFFFQkJRVUFNQzh4TFRBckJnTlZCQU1NSkVGa2JXbHpjMmx2YmlCRGIyNTBjbTlzYkdWeUlGZGxZbWh2YjJzZ1JHVnRieUJEUVRBZUZ3MHlNakE0TURNeE5USTVNVEphRncwek5qQTBNVEV4TlRJNU1USmFNQ294S0RBbUJnTlZCQU1NSDNkbFltaHZiMnN0YzJWeWRtVnlMbmRsWW1odmIyc3RaR1Z0Ynk1emRtTXdnZ0VpTUEwR0NTcUdTSWIzRFFFQkFRVUFBNElCRHdBd2dnRUtBb0lCQVFDcDVqNmhoWUtUOFFBZ21VaFQrclBRSG95bGU4czlJRUdKN1BvZWpaMzhKeGVQRGI1Ym1nTWg1cG5yd1ZGWVZHK2xYTlpvY05zeWtlb3hZTkFJTG1iVXRMSTl1QjJwWEJVRWpJWUVmZUw1VGZkblFaazRqQzJtK21jQmh3Y3UrUlJzVXRSMGx0emp1RE9rY2V4M0JqakxZejN3dlkyOGZaT1JjcUtJM0tvZW03ck5IbVJ1TGdVNGNRcWZFdnB6T0Y3MmJ2Wm1QWEdWTWhXY1hwa1VWaFJyQm9oM0hjMnpJSmY0SktyMXNOQlhtYjBSRjVTN3l3STFUMkYwMjludEZOM1dNWjVaWXVyZ0ZsbnVxeW5DQk1NL2hJVnZhVVJrd282YUswU1k1aVRRWmlNMFJUd3J0TW5OS2xkaWJPSkhPZ1BrZFZDU0lkNUdZaGJaOU9QOEN1RGZBZ01CQUFHalpqQmtNQWtHQTFVZEV3UUNNQUF3Q3dZRFZSMFBCQVFEQWdYZ01CMEdBMVVkSlFRV01CUUdDQ3NHQVFVRkJ3TUNCZ2dyQmdFRkJRY0RBVEFyQmdOVkhSRUVKREFpZ2hwM1pXSm9iMjlyTFhObGNuWmxjaTVrWldaaGRXeDBMbk4yWTRjRXdLaVpNakFOQmdrcWhraUc5dzBCQVFVRkFBT0NBUUVBYlpoSnBJVVpINU1uTXoyb1dEekNiK2JOMEhBK2RyRDFGclFHK1NQc0gvNVVsU3lLaGxRb0VOQ1drT3d1YkJYUGNPL2lVSTcvNWc0aEV5VVFVdWQ2WXMxY1Q2a0p0Q2lPV2hDWXl0elVVYlVSNy9EODRmZDM2Ym53M3MzOVNoeTMyUzFOWXRBVUl6cU1Kak92MVBQWXJyNXVSM2FuenVlVEJiNlU0cmo1enhhRFRBR0dpL1MvMkNta0Y3RUxmdXo1Q2lFTmZVSTFtMzY2NG9ybC9FbDV6RUVNWVF1Ulg0ZFh4YVRtODh2MVZTYy92REFxY1VXZTFvelRXR3ZBRlpKcGtrZmFwZ2VDbG9KSDhDZlpPKzExU3NQTjhkZ1dIUE9CY3pobERlY3FLbTNub21yQ0hUbE1yaDBKUEJMRFMrVm5XdEl2dzB1dWVlc3hJTXNKUTZUWWNnPT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo="
+  port: 8443
+  keyStore: "classpath:keystore/webhookkey.p12"
+  keyStorePassword: "password"
+  keyStoreType: "PKCS12"
+security:
+  kid: common
+  permissionsConfigMap: operator-security-map
+  privateKeySecretName: service-account-private-key
+  privateKeyPath: /opt/gigaspaces/config/security/key
