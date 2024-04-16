@@ -1,0 +1,98 @@
+# Default values for xap-pu.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+global:
+  imagePullSecrets:
+nameOverride: xap-pu
+image:
+  repository: gigaspaces/smart-cache-enterprise
+  tag: 16.4.2
+  pullPolicy: IfNotPresent #Always
+terminationGracePeriodSeconds: 30
+# imagePullSecrets: Define an array of secret's names to pull image
+# imagePullSecrets:
+# license: Define the GigaSpaces XAP licence key.
+license: tryme
+# resource: Define the URL of Processing Unit JAR file.
+resourceUrl:
+# properties: Used to override the pu.xml properties that are defined as placeholders, receives string such as: memoryThreshold=7g (see documentation)
+properties:
+propertiesFrom:
+# schema: Define the cluster schema (optional)
+# valid values: partitioned, sync_replicated ,async_replicated
+# If the schema is not defined, the default value is based on the partitions property (see below).
+schema:
+# partitions: Define the number of partitions in the cluster.
+partitions: 1
+# HA: Define whether the cluster should be highly available.
+# Set the anti-affinity value to enabled=true to ensure pod distribution across different nodes.
+ha:
+# Define the pod anti-affinity
+antiAffinity:
+  # enabled: Define whether Pod anti-affinity is enabled.
+  enabled: false
+# Define the pod liveness probe
+# See structure: [API reference](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Probe) for details.
+livenessProbe:
+# Define the pod readinessProbe probe
+# See structure: [API reference](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Probe) for details.
+readinessProbe:
+# Add custom mounting of a volumes within a base container
+# See structure: [API reference](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1 - volumeMounts) for details.
+volumeMounts:
+nodeSelector:
+  enabled: false
+  selector:
+# instances: Define the number of instances (not applicable for `partitioned` schema)
+instances:
+# java: Define the Java options for each processing unit instance.
+java:
+  # heap: Define the size of the on-heap memory for each processing unit instance as either a percentage or an absolute value.
+  heap: limit-150Mi
+  # options: Configure additional Java options for each processing unit instance.
+  options:
+# resources: Configure the processing unit instance resources.
+resources:
+  # Best practice is do not specify default resources, so the user can configure independently.
+  # This can be especially risky when the chart is run on an environment with limited
+  # resources, such as a minikube. If you still want to configure specific resources, adjust the values as necessary.
+  limits:
+    memory: 4Gi
+env:
+envFrom:
+# manager: Used when you install the Platform Manager separately; insert the Platform Manager release name here.
+manager:
+  name: xap-manager
+  ports:
+    api: 8090
+  # discoveryTimeoutSeconds: Define the length of the timeout for checking if the Platform Manager is available.
+  # If the timeout expires and the Platform Manager is still unavailable, the init pod will restart.
+  discoveryTimeoutSeconds: 60
+securityService:
+# When enabled, mount metrics configMap for metrics reported by Gigaspaces components.
+metrics:
+  enabled: false
+# When enabled, will attach a volume for the tierd-storage.
+persistence:
+  enabled: false
+  storageClassName:
+  # default: ReadWriteOnce
+  accessMode:
+  # default: 10Gi
+  size:
+# Enable override of statefulset
+# Statefulset overrides - can be used to add additional setting for the stateful set that the Processing Unit is creating.
+statefulSetExtension:
+  enabled: false
+  spec:
+    template:
+      metadata:
+        annotations:
+        labels:
+        finalizers:
+      spec:
+        initContainers:
+        containers:
+        volumes:
+        securityContext:
+        serviceAccountName:

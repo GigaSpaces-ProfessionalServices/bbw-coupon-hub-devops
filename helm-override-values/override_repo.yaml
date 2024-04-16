@@ -1,4 +1,6 @@
 global:
+  imagePullSecrets:
+    - myregistrysecret
   security:
     enabled: false
     # global (admin) password is expected to be given in installation
@@ -59,21 +61,23 @@ influxdb:
 grafana:
   image:
     repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/grafana
+    pullsecrets: myregistrysecret
   sidecar:
     repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/k8s-sidecar
 
 #gigaspaces/mcs-service-operator:1.0.13
 service-operator:
-  enabled: false
+  enabled: true
   image:
     repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/mcs-service-operator
   operatorConfig:
-  image: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/mcs-query-service:1.0.14
+  image: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/mcs-query-service
+  tag: 1.0.21
   # "bitnami/kubectl" - service-operator - currently cannot be overridden 
 
 #gigaspaces/mcs-service-creator:1.0.13
 service-creator:
-  enabled: false
+  enabled: true
   image:
     repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/mcs-service-creator
     tag: 1.0.21 # this image has been provided by Sapir

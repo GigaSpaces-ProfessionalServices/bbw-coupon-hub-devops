@@ -1,0 +1,57 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Release.Name }}-pvc-deleter-role
+  namespace: {{ .Release.Namespace }}
+rules:
+  - apiGroups: [ "" ]
+    resources: [ "persistentvolumeclaims" ]
+    verbs: [ "get", "list", "delete", "deletecollection" ]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Release.Name }}-pvc-deleter-rolebinding
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ .Release.Name }}-pvc-deleter-role
+subjects:
+  - kind: Group
+    name: "system:serviceaccounts:{{ .Release.Namespace }}"
+    namespace: {{ .Release.Namespace }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Release.Name }}-pvc-deleter-sa
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-pvc-deleter-job
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": hook-succeeded
+    "app.kubernetes.io/instance": {{ .Release.Name }}
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: post-delete-job
+          image: "harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/bitnami/kubectl"
+          command: [ "kubectl" ]
+          args:
+            - "delete"
+            - "pvc"
+            - "--wait=false"
+            - "-l"
+            - "app.kubernetes.io/instance={{ .Release.Name }}"
+      serviceAccountName: {{ .Release.Name }}-pvc-deleter-sa
+      securityContext:
+        runAsUser: 0

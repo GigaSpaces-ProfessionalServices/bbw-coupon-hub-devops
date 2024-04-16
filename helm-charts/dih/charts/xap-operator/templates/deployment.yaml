@@ -1,0 +1,202 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: xap-operator
+  namespace:  {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: xap-operator
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        name: xap-operator
+        release: {{ .Release.Name }}
+    spec:
+      {{- include "xap.operator.imagePullSecrets" . | nindent 6 }}
+      initContainers:
+        - name: create-keystore
+          image: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/alpine/openssl
+          command: ['sh', '-c', 'if [ ! -f /ssl/tls.crt ]; then cp /app/webhookkey.p12 /keystore/webhookkey.p12; else openssl pkcs12 -password pass:{{ .Values.webhook.keyStorePassword }} -export -in /ssl/tls.crt -inkey /ssl/tls.key -out /keystore/webhookkey.p12 -certfile /ssl/ca.crt; fi']
+          volumeMounts:
+            - name: default-keystore
+              mountPath: /app/webhookkey.p12
+              subPath: webhookkey.p12
+            {{- if not .Values.webhook.ca }}
+            - name: ssl
+              mountPath: /ssl
+              readOnly: true
+            {{- end }}
+            - name: keystore
+              mountPath: /keystore
+        {{- if .Values.delay }}
+        - name: wait-for-master-before-starup
+          image: "{{ .Values.image.init.repository }}:{{ .Values.image.init.tag }}"
+          # wait for the manager to be available. wait additional time for HA to get zookeeper quorum
+          command: [ "sh", "-c", "until nc -z xap-manager-service 8090 > /dev/null; do echo Waiting for master.; sleep 5; done; sleep 100;" ]
+        {{- end }}
+      containers:
+        - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          volumeMounts:
+            {{- if .Values.keystore.enabled }}
+            - name: tls
+              mountPath: /opt/gigaspaces/config/keystore/
+              readOnly: true
+            {{- end }}
+            {{- if .Values.global.security.enabled }}
+            - name: private-key
+              mountPath: {{ .Values.security.privateKeyPath }}
+              subPath: key
+              readOnly: true
+            {{- end }}
+            {{- if not .Values.webhook.ca }}
+            - name: ssl
+              mountPath: /opt/gigaspaces/config/ssl/
+              readOnly: true
+            {{- end }}
+            - name: keystore
+              mountPath: /opt/gigaspaces/config/keystore/
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          name: xap-operator
+          env:
+            - name: GS_LICENSE
+              value: "{{ .Values.license}}"
+            - name: PRE_UNDEPLOY_TIMEOUT
+              value: "15000"
+            - name: PRE_DEPLOYMENT_TIMEOUT
+              value: "60000"
+            - name: UPDATING_TIMEOUT
+              value: "60000"
+            - name: DEPLOYMENT_STARTED_TIMEOUT
+              value: "240000"
+            - name: PU_READINESS_CHECK_DELAY
+              value: "10"
+            - name: MANAGER_BASE_URL
+              value: "http://{{ .Values.manager.name }}-service:{{ .Values.manager.port }}"
+            - name: NAMESPACE
+              value: {{ .Release.Namespace }}
+            - name: RELEASE_NAME
+              value: {{ .Release.Name }}
+            - name: MANAGER_NAME
+              value: {{ .Values.manager.name }}
+            - name: ANTIAFFINITY_TOPOLOGY
+              value: {{ .Values.antiAffinity.topology | default "topology.kubernetes.io/zone" }}
+            {{- if .Values.keystore.enabled }}
+            - name: KEY_STORE_TYPE
+              value: {{ .Values.keystore.keystoreType}}
+            - name: KEY_STORE_FILE
+              value: {{ .Values.keystore.fileName}}
+            - name: KEY_STORE_PSWD
+              value: {{ .Values.keystore.password}}
+            {{- end }}
+            {{- if .Values.global.security.enabled }}
+            - name: SECURED
+              value: "{{ .Values.global.security.enabled }}"
+            - name: KID
+              value: {{ .Values.security.kid }}
+            - name: SECURITY_CONFIG
+              value: {{ .Values.security.permissionsConfigMap }}
+            - name: SECURITY_PRIVATE_KEY_PATH
+              value: {{ .Values.security.privateKeyPath }}
+            - name: SECURITY_BASE_URL
+              value: "http://{{ .Values.global.xap.security.service.name }}-service:{{ .Values.global.xap.security.service.port }}"
+          {{- end }}
+          envFrom:
+            {{- if .Values.global.security.enabled }}
+            - configMapRef:
+                name: "{{ .Values.security.permissionsConfigMap }}"
+          {{- end}}
+          ports:
+            - containerPort: 8443
+              name: webhook-api
+      {{- if .Values.nodeSelector }}
+      nodeSelector:
+      {{- toYaml .Values.nodeSelector | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: tls
+          secret:
+            secretName: {{ .Values.keystore.secretName}}
+        - name: default-keystore
+          configMap:
+            name: default-keystore
+        {{- if not .Values.webhook.ca }}
+        - name: ssl
+          secret:
+            secretName: {{ .Release.Name }}-certificate
+        {{- end }}
+        - name: keystore
+          emptyDir: {}
+        - name: private-key
+          secret:
+            secretName: {{ .Values.security.privateKeySecretName }}
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: default-{{ .Release.Namespace }}
+  namespace:  {{ .Release.Namespace }}
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace:  {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+  {{- if .Values.autoCleanup.enabled }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: xap-purge-pu-job
+  namespace:  {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": "pre-delete"
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": "hook-succeeded,before-hook-creation"
+spec:
+  template:
+    spec:
+      containers:
+        - name: xap-purge-resources
+          # having seperate image for job but same(!!!) image tag as the operator has
+          image: "{{ .Values.autoCleanup.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          env:
+            - name: PURGE_TIMEOUT
+              value: "{{ .Values.autoCleanup.timeoutSeconds }}"
+            - name: NAMESPACE
+              value: {{ .Release.Namespace }}
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+      restartPolicy: OnFailure
+      terminationGracePeriodSeconds: 0
+  backoffLimit: 3
+  {{- end }}
+---
+---
+  {{- if .Values.global.security.enabled }}
+#operator default private key - should be changed to client's key
+apiVersion: v1
+kind: Secret
+metadata:
+  name: service-account-private-key
+type: Opaque
+data:
+  key: |
+    LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2Z0lCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktnd2dnU2tBZ0VBQW9JQkFRRFJZdEJFdWFhZW83NTMKYndLSm9INmtyNk5rdVZCRHBpdFBkZ2JUK1hOODlqdGFYcUNWNUZyN1JQTmlzSHl4VmJFWUhXZndnbE82cGZIQgpiUGJsaUVTNW5iSHZGNVlhYWNFWXo5cTVXaExuSGViS2JHMHRZd25IUkkyaHdxSXhtZU1jMmJuL2JxaVQ3OUdHClNOLzUzaXhyRmdRU3RGSjc1cVVKU2RGZThMVzZWWlJYbEFPenZUNHg2OWdialRHY2NEWHk0V2RaZERtVTVxcjgKdDN6bVptVmRkY3BhY0ZkZDcyaDIyOE5RaHNlcXFteFVvckI3VG9FU0laTVZzYnhmZVBrSytHVHhHRHRKMmF6MQpNSndSemR4QW5Bb3NmbXRqa0g3dDZYVkQ2b1Z4YVkwYUpXWHliZFJrNjlDa2didzdERGJMeFNmSFlRZEFDRXpzCmRaa0lDZy9QQWdNQkFBRUNnZ0VBVDRtb3NhS1FMNHpsNmpxS0RUdWhQKy9VTW92T2VKUWp1YUNOQVhLdHN4ZFoKL244Wm96YkdkTktCWGNqSzVSWTNHb0Q1SGJ4MEQ5Ky9rUWxTVkdqS0tuUkR4aDRBai9JQ1B1bWVIWENnNDVoUgpOaTJ2MzJEU3N4WlFjdFViaFpuK1V0UkdPa2lQMHZwemJmNDZ6cERkOEtQQlVsV2JTNk9XcDR1WjgrV2VNclJsCk8zWWpJaUVaT1BPUmU1endyeFVvUU5xQVJwd204RnBJREdNRUVHcTFLSU9QTTM4OXVZaG14ZWp4eXJ0bW9neG0KSStGSzdxNmRrRVVoU2JoVnlhdGxEWG82VjZZN2ZxRTkrSUtWRnJIbnc1cDR2N0wwNXc4RVdwcDUzVWd2UVVFbQpxOWpaclBkWUZoaTlTaVpIalVGQ243NWkzLy9Pa2JBK2g0bzlQM1ROU1FLQmdRRDRaVUEvNlpNY042V2lhTlBQCjJTWHh2bkVBTG1JRmpScnJDRWIwaThOMFBISmdnazhDanFzN1V6WWUxeXBMTCtPbHBuakYzQW14ZFpmQkRGOTEKeXFMTmpCZTRwd3huSE9jSXdKNnN6K3ZQWkRWMlgrWnYxRVVGQ295SE9RUzVIU1RRNmlSeW0rc1hCaU9IYStyawpnSXJQZTd6UFI4NGVieHhXZ3hMYVBhTXJLd0tCZ1FEWHk5VmJrNzVaMnlEdHdVMGw5S0ZuR0hpb3VQR2hlQ0NQCnV1ZUxybTBmd3MwNVZuN3FrNHBOOWNHTjJyaDBrVFFxcm5VZWtCTXI1MzdrMnk5Qm1CQkxHT0F6cXkrQ2p5K1MKekdmcjd0dEtHalhrb2pMNW1IS2NGV204NXRXQkNwc1lGcUUxYTJxTm1hME5Xbnl2Y1p3aGZWNys2dUhZL3RhTQordmViWGtETDdRS0JnRlJnWUlEVllRbDJ4YWJ6b08rN3ZhM3VtUWdNdVhOVlNVMkpWRUVCc1BVdEMxVkpMbm1aCjZRU1A4WlJzVm91UHl1NmNLKzVhSGxqUHJ5citmdmJPVEpzeCtXVGFLZFprOVAzK0lHaG5nSnpFVjN6TWVzU0cKQUtRRHYxUzN3NmoyQTJtTC83R0cwVWJTNlFLNVgrTWEzd3czNWgwck1STVpmekRMK1gxMDdwWmRBb0dCQU5MQworZmNmTFdLRmFudkx0NVhDZjRFNW5WN3NndEs1aU5QWU1CMTBsby9XcXFtOW1PZHlnam55Tk1CZlJwaFMyU2gyCmkxejJTa012TGZoSE9yaE4xRndFUjdVdkZJL25XUWQvTEdCNlFTTDJ4bnd2RHFwSUFtZi9ZZTVsWlZGTEVuOU0KV3RiWnVvL2g3K3FDM2hSY1dhazcwWFFYNDgwVDJHaUpGUnhoeWRkaEFvR0JBT1FIQTZEN1pxcjc3S25rQ2lmVwo0OTl2RGxtKyt3a041THZGc25wZUszNFdyY3dXc1o1YjFTZ3EvVm1lbVdKdDFvWXBCYXFLa1lMQ0dBSHdvc2xPCmg2Q1EwaGVpdy9SUEErcUhvaWdUZVNLbFQxU0NuOEQ5ZUxPT2VDdURsNkIwdzY5U2VBYU1uRjV0dEtpSFFqWEcKbW0zYmFaWmFleWpaSHlqWVpaYTNSTE0zCi0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0K
+  {{- end }}
+---
+  {{- if .Values.global.security.enabled }}
+#operator security permissions config map
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: operator-security-map
+data:
+  permissions: |
+    GridPrivilege PROVISION_PU
+  {{- end }}
