@@ -61,7 +61,7 @@ influxdb:
 grafana:
   image:
     repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/grafana
-    pullsecrets: myregistrysecret
+    pullSecrets: myregistrysecret
   sidecar:
     repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/k8s-sidecar
 
