@@ -49,7 +49,16 @@ spacedeck:
 #influxdb
 influxdb:
   image:
-    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/influxdb 
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/influxdb
+  config:
+    reporting_disabled: true 
+  # set retention policy
+  initScripts:
+    enabled: true
+    scripts:
+      init.iql: |+
+        CREATE RETENTION POLICY "two_weeks" ON "mydb" DURATION 2w REPLICATION 1 SHARD DURATION 1d DEFAULT
+    
   
 #grafana
 grafana:
