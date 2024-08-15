@@ -1,87 +1,141 @@
+
+# bbw_dev_override_values.yaml
+# ----------------------------
+# Version: 17.0.1
+# License: "Product=InsightEdge;Version=17.0;Type=ENTERPRISE;Customer=Bath_and_Body_Works_DEV;Expiration=2025-Dec-31;Hash=YLZeVWP2S1ikMORZNNSQ"
+# Enable openShift support by openshift: true
+
 global:
-  imagePullSecrets:
-    - myregistrysecret
+  openshift: true
+  deleterJob:
+    securityContext:
+    imagePullSecrets: 
+        - harborsecret
+    image:
+      repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/bitnami/kubectl
+      
+      
+    
   security:
     enabled: false
     # global (admin) password is expected to be given in installation
     password:
+  kafkaRest:
+    enabled: false
 
-#deploys di umbrella
+# To disable/enable kafka and zookeeper (enabled [true] for Dev)
+tags:
+  bitnamiImages: false
+
+#kafka:
+#  image:
+#    registry: harbor.hq.bbwcorp.com/bbw_omni_channel_it
+#    repository: kafka
+
+#zookeeper:
+#  image:
+#    registry: harbor.hq.bbwcorp.com/bbw_omni_channel_it
+#    repository: zookeeper
+
+# To disable/enable kafka-ui (enabled dor Dev)
+redpanda:
+  enabled: false
+#  image:
+#    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/redpandadata/console
+
+
+# Disable di stack (it's not required in BBW)
 di:
   enabled: false
-
 flink:
   enabled: false
   
-kafka:
-  enabled: false
 
-#kafka ui
-redpanda:
-  enabled: false
-
-# Chart: dih/charts/xap-manager
 manager:
-  license: "Product=InsightEdge;Version=16.4;Type=ENTERPRISE;Customer=Bath_and_Body_Works_DEV;Expiration=2024-Dec-31;Hash=WsXSoPNONaQOkfOYlQPR"
+  license: "Product=InsightEdge;Version=17.0;Type=ENTERPRISE;Customer=Bath_and_Body_Works_DEV;Expiration=2025-Dec-31;Hash=YLZeVWP2S1ikMORZNNSQ"
   image:
-    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/smart-cache-enterprise
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/smart-cache-enterprise
+  java:
+    options: -Dcom.gigaspaces.logger.RollingFileHandler.backup-policy=com.gigaspaces.logger.DeleteBackupPolicy -Dcom.gigaspaces.logger.DeleteBackupPolicy.period=1
+  resources:
+    requests:
+       memory: 4000Mi
+       cpu: 5000m
+    limits:
+      memory: 6000Mi
+      cpu: 5000m
 
-# Chart: dih/charts/xap-operator
-#gigaspaces/cache-operator:16.4.2
+ 
+
 operator:
-  license: "Product=InsightEdge;Version=16.4;Type=ENTERPRISE;Customer=Bath_and_Body_Works_DEV;Expiration=2024-Dec-31;Hash=WsXSoPNONaQOkfOYlQPR"
+  license: "Product=InsightEdge;Version=17.0;Type=ENTERPRISE;Customer=Bath_and_Body_Works_DEV;Expiration=2025-Dec-31;Hash=YLZeVWP2S1ikMORZNNSQ"
   image:
-    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/cache-operator
-  init:
-    repository: busybox
-      #gigaspaces/cache-operator-purge-job:16.4.0
-  autoCleanup:
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/cache-operator
+    init:
+      repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/busybox
+  openssl:
     image:
-      repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/cache-operator-purge-job
-# alpine/openssl - currently cannot be overridden dih/charts/xap-operator/templates/deployment.yaml
+      repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/alpine/openssl
 
-#Chart: dih/charts/spacedeck
-#gigaspaces/spacedeck:1.1.39
 spacedeck:
   image:
-    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/spacedeck
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/spacedeck
+  resources:
+    requests:
+      memory: "1000Mi"
+      cpu: "1000m"
+    limits:
+      memory: "2000Mi"
+      cpu: "1000m"
 
-#influxdb
 influxdb:
   image:
     repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/influxdb
+    pullSecrets: 
+        - harborsecret
   config:
     reporting_disabled: true 
-  # set retention policy
+  # set retention policy for influxdb
   initScripts:
     enabled: true
     scripts:
       init.iql: |+
         CREATE RETENTION POLICY "two_weeks" ON "mydb" DURATION 2w REPLICATION 1 SHARD DURATION 1d DEFAULT
-    
-  
-#grafana
-grafana:
-  image:
-    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/grafana
-    pullSecrets:
-      - myregistrysecret
-  sidecar:
-    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/k8s-sidecar
+  setDefaultUser:
+    enabled: false
 
-#gigaspaces/mcs-service-operator:1.0.13
+grafana:
+  securityContext: ""
+  image:
+    registry: harbor.hq.bbwcorp.com/bbw_omni_channel_it
+    repository: giga/grafana
+  sidecar:
+    image:
+      registry: harbor.hq.bbwcorp.com/bbw_omni_channel_it
+      repository: giga/kiwigrid/k8s-sidecar
+  testFramework:
+    image:
+      registry: harbor.hq.bbwcorp.com/bbw_omni_channel_it
+      repository: giga/bats
+    
 service-operator:
   enabled: true
   image:
-    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/mcs-service-operator
-  operatorConfig:
-    image: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/mcs-query-service
-    tag: 1.0.21
-  # "bitnami/kubectl" - service-operator - currently cannot be overridden 
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/mcs-service-operator
+#    pullPolicy: Always
+  
+  serviceConfig:
+    image:
+      repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/mcs-query-service
+ 
 
-#gigaspaces/mcs-service-creator:1.0.13
+
 service-creator:
   enabled: true
   image:
-    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/mcs-service-creator
-    tag: 1.0.21 # this image has been provided by Sapir
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/mcs-service-creator
+
+dgw:
+  image:
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/smart-cache-enterprise
+
