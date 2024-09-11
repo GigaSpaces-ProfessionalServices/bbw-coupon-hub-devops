@@ -56,7 +56,7 @@ manager:
   image:
     repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/smart-cache-enterprise
   java:
-    options: -Dcom.gigaspaces.logger.RollingFileHandler.backup-policy=com.gigaspaces.logger.DeleteBackupPolicy -Dcom.gigaspaces.logger.DeleteBackupPolicy.period=1 -Dcom.gs.hsqldb.all-metrics-recording.enabled=false -Dhsqldb.db.level=OFF -Dcom.gs.expose.internal.api=true 
+    options: -Dcom.gigaspaces.logger.RollingFileHandler.backup-policy=com.gigaspaces.logger.DeleteBackupPolicy -Dcom.gigaspaces.logger.DeleteBackupPolicy.period=1 -Dcom.gs.hsqldb.all-metrics-recording.enabled=false -Dhsqldb.db.level=OFF -Dcom.gs.expose.internal.api=true -Dgs.gc.collectionTimeThresholdWarning=1000
   resources:
     requests:
        memory: 4000Mi
