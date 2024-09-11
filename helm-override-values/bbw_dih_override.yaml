@@ -82,11 +82,11 @@ spacedeck:
     repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/spacedeck
   resources:
     requests:
-      memory: "1000Mi"
-      cpu: "1000m"
+       memory: 1000Mi
+       cpu: '1'
     limits:
-      memory: "2000Mi"
-      cpu: "1000m"
+      memory: 2000Mi
+      cpu: '1'
 
 influxdb:
   image:
