@@ -5,6 +5,14 @@ properties:
     value: "4"
   - name: "space-config.engine.query.result.size.limit"
     value: "10000"
+  - name: "space-config.engine.memory_usage.high_watermark_percentage"
+    value: "98"
+  - name: "space-config.engine.memory_usage.write_only_block_percentage"
+    value: "97"
+  - name: "space-config.engine.memory_usage.write_only_check_percentage"
+    value: "96"
+  - name: "space-config.engine.memory_usage.low_watermark_percentage"
+    value: "95"    
 
 persistence:
   enabled: true
@@ -23,7 +31,7 @@ resources:
     memory: "10Gi"
 
 java:
-  options: -Dcom.gigaspaces.logger.RollingFileHandler.backup-policy=com.gigaspaces.logger.DeleteBackupPolicy -Dcom.gigaspaces.logger.DeleteBackupPolicy.period=1 -Dcom.gs.transport_protocol.lrmi.max-conn-pool=2048 -Dcom.gs.transport_protocol.lrmi.max-threads=256 -Dcom.gs.hsqldb.all-metrics-recording.enabled=false -Dhsqldb.db.level=OFF 
+  options: -Dcom.gigaspaces.logger.RollingFileHandler.backup-policy=com.gigaspaces.logger.DeleteBackupPolicy -Dcom.gigaspaces.logger.DeleteBackupPolicy.period=1 -Dcom.gs.transport_protocol.lrmi.max-conn-pool=2048 -Dcom.gs.transport_protocol.lrmi.max-threads=256 -Dcom.gs.hsqldb.all-metrics-recording.enabled=false -Dhsqldb.db.level=OFF -Dgs.gc.collectionTimeThresholdWarning=1000 -XX:+DisableExplicitGC
   heap: "8g"
   
 partitions: 4
