@@ -1,0 +1,146 @@
+# bbw_dev_override_values.yaml
+# ----------------------------
+# Version: 17.0.1
+# License: "Product=InsightEdge;Version=17.0;Type=ENTERPRISE;Customer=Bath_and_Body_Works_DEV;Expiration=2025-Dec-31;Hash=YLZeVWP2S1ikMORZNNSQ"
+# Enable openShift support by openshift: true
+
+global:
+  openshift: true
+  deleterJob:
+    securityContext:
+    imagePullSecrets: 
+        - myregistrysecret
+    #image:
+      #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/bitnami/kubectl
+      
+      
+    
+  security:
+    enabled: false
+    # global (admin) password is expected to be given in installation
+    password:
+  kafkaRest:
+    enabled: false
+
+# To disable/enable kafka and zookeeper (enabled [true] for Dev)
+tags:
+  bitnamiImages: false
+
+#kafka:
+#  #image:
+#    registry: harbor.hq.bbwcorp.com/bbw_omni_channel_it
+#    #repository: kafka
+
+#zookeeper:
+#  #image:
+#    registry: harbor.hq.bbwcorp.com/bbw_omni_channel_it
+#    #repository: zookeeper
+
+# To disable/enable kafka-ui (enabled dor Dev)
+redpanda:
+  enabled: false
+#  #image:
+#    #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/redpandadata/console
+
+
+# Disable di stack (it's not required in BBW)
+di:
+  enabled: false
+flink:
+  enabled: false
+  
+
+manager:
+  license: "Product=InsightEdge;Version=17.0;Type=ENTERPRISE;Customer=Bath_and_Body_Works_DEV;Expiration=2025-Dec-31;Hash=YLZeVWP2S1ikMORZNNSQ"
+  #image:
+    #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/smart-cache-enterprise
+  java:
+    options: -Dcom.gigaspaces.logger.RollingFileHandler.backup-policy=com.gigaspaces.logger.DeleteBackupPolicy -Dcom.gigaspaces.logger.DeleteBackupPolicy.period=1 -Dcom.gigaspaces.logger.DeleteBackupPolicy.period=1 -Dcom.gs.hsqldb.all-metrics-recording.enabled=false
+  resources:
+    requests:
+       memory: 4000Mi
+       cpu: 5000m
+    limits:
+      memory: 6000Mi
+      cpu: 5000m
+
+ 
+
+operator:
+  license: "Product=InsightEdge;Version=17.0;Type=ENTERPRISE;Customer=Bath_and_Body_Works_DEV;Expiration=2025-Dec-31;Hash=YLZeVWP2S1ikMORZNNSQ"
+  #podPolicyOrderedOnly: true
+  #image:
+    #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/cache-operator
+    #init:
+      #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/busybox
+  #openssl:
+    #image:
+      #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/alpine/openssl
+
+spacedeck:
+  env:
+  - name: HOSTS_DISABLED
+    value: "true"
+  #image:
+    #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/spacedeck
+  resources:
+    requests:
+       memory: 1000Mi
+       cpu: '1'
+    limits:
+      memory: 2000Mi
+      cpu: '1'
+
+influxdb:
+  persistence:
+    storageClass: azure-premium-zrs
+  #image:
+    #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/influxdb
+    #pullSecrets: 
+    #    - harborsecret
+  config:
+    reporting_disabled: true 
+  # set retention policy for influxdb
+  initScripts:
+    enabled: true
+    scripts:
+      init.iql: |+
+        CREATE RETENTION POLICY "two_weeks" ON "mydb" DURATION 2w REPLICATION 1 SHARD DURATION 1d DEFAULT
+  setDefaultUser:
+    enabled: false
+
+grafana:
+  securityContext: ""
+  #image:
+    #registry: harbor.hq.bbwcorp.com/bbw_omni_channel_it
+    #repository: giga/grafana
+  #sidecar:
+    #image:
+      #registry: harbor.hq.bbwcorp.com/bbw_omni_channel_it
+      #repository: giga/kiwigrid/k8s-sidecar
+  #testFramework:
+    #image:
+      #registry: harbor.hq.bbwcorp.com/bbw_omni_channel_it
+      #repository: giga/bats
+    
+service-operator:
+  enabled: true
+  #image:
+    #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/mcs-service-operator
+#    pullPolicy: Always
+  
+  #serviceConfig:
+    #image:
+      #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/mcs-query-service
+ 
+
+
+service-creator:
+  enabled: true
+  #image:
+    #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/mcs-service-creator
+
+#dgw:
+  #image:
+    #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/smart-cache-enterprise
+
