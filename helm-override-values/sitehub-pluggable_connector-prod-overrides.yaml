@@ -1,0 +1,21 @@
+image:
+  repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/di-pluggable-connector
+  pullPolicy: IfNotPresent
+  tag: "17.0.6"
+
+imagePullSecrets:
+  - name: harborsecret
+
+kafka:
+  bootstrapServers: lkc-9k8mgv-6w2ox6.eastus2.azure.glb.confluent.cloud:9092
+  securityProtocol: SASL_SSL
+  key: "FTAFQE4LFYUOSF5D"
+  secret: "pjR8+g9i0+YYI7fHCW/QR/hWMDccNWHu+7FTQsqWTo0INOYR+lqSIh80JGrZ3ryb"
+  consumerGroup: bbw_eai_consumer_group_sitehub_connector_prod
+
+connector:
+  transactional-task: true
+
+space:
+  name: sitehub
+  locators: xap-manager-hs
