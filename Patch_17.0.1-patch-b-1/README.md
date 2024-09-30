@@ -5,19 +5,7 @@
 
 DIH and xap-pu images
 ```
-gigaspaces/mcs-query-service:2.0.3
-quay.io/kiwigrid/k8s-sidecar:1.26.1
-docker.io/grafana/grafana:10.4.1
-alpine/openssl:3.1.3
-busybox:1.36.0
-gigaspaces/cache-operator:17.0.1-patch-b-1
-gigaspaces/mcs-service-creator:2.0.1
-gigaspaces/mcs-service-operator:2.0.1
-gigaspaces/spacedeck:1.2.39
-influxdb:1.8.10
 gigaspaces/smart-cache-enterprise:17.0.1-patch-b-1
-docker.io/bats/bats:v1.4.1
-bitnami/kubectl:1.30.1
 ```
 
 Tiered Storage Backup tool image
@@ -40,7 +28,7 @@ docker push ...
 ``` helm install ts-backup <DIHREPO>/ts-backup -n <NAMESPACE> -f ./ts-backup.yaml ```
 
 ## Backup Tiered Storage data (xap-pu)
-## *Stop the Pluggable Connector to avoid writes into the space*
+## *It is recommended to stop the Pluggable Connector and the Cuoponhub Service to prevent writes to the space.*
 
 Open a terminal to the ts-backup pod (you can use openshift console or kubectl exec)
 
@@ -72,7 +60,7 @@ cd scripts
 ## Upgrade DIH umbrella from 17.0.1 to 17.0.1-patch-b-1
 To upgrade dih umbrella run this command:
 ```
-helm upgrade --install dih dih/dih --version 17.0.1-patch-b-1 --namespace dih3 -f ./dih_openshift_values.yaml
+helm upgrade --install dih <DIHREPO>/dih --version 17.0.1-patch-b-1 --namespace <NAMESPACE> -f ./dih_openshift_values.yaml
 ```
 Verify the dih components have upgraded.
 

@@ -23,7 +23,12 @@ resources:
     memory: "8Gi"
 
 java:
-  options: -Dcom.gigaspaces.logger.RollingFileHandler.backup-policy=com.gigaspaces.logger.DeleteBackupPolicy -Dcom.gigaspaces.logger.DeleteBackupPolicy.period=1 -Dspace-config.engine.query.result.size.limit=10000 -Dcom.gs.transport_protocol.lrmi.max-conn-pool=2048 -Dcom.gs.transport_protocol.lrmi.max-threads=256 -Dspace-config.engine.query.result.size.limit=10000
+  options: -Dcom.gigaspaces.logger.RollingFileHandler.backup-policy=com.gigaspaces.logger.DeleteBackupPolicy 
+  -Dcom.gigaspaces.logger.DeleteBackupPolicy.period=1 
+  -Dspace-config.engine.query.result.size.limit=10000 
+  -Dcom.gs.transport_protocol.lrmi.max-conn-pool=2048 
+  -Dcom.gs.transport_protocol.lrmi.max-threads=256 
+  # -Dspace-config.engine.query.result.size.limit=10000
 #  heap: "8g"
   
 partitions: 40
