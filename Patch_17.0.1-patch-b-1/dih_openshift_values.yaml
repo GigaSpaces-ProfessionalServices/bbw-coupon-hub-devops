@@ -62,10 +62,10 @@ manager:
   resources:
     requests:
        memory: 4000Mi
-       cpu: 5000m
+       cpu: 2000m
     limits:
       memory: 6000Mi
-      cpu: 5000m
+      cpu: 2000m
 
  
 
