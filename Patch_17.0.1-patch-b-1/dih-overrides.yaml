@@ -1,7 +1,9 @@
 # bbw_dev_override_values.yaml
 # ----------------------------
 # Version: 17.0.1
-# License: "Product=InsightEdge;Version=17.0;Type=ENTERPRISE;Customer=Bath_and_Body_Works_DEV;Expiration=2025-Dec-31;Hash=YLZeVWP2S1ikMORZNNSQ"
+# Licenses: "Product=InsightEdge;Version=17.0;Type=ENTERPRISE;Customer=Bath_and_Body_Works_DEV;Expiration=2025-Dec-31;Hash=YLZeVWP2S1ikMORZNNSQ"
+# "Product=InsightEdge;Version=17.0;Type=ENTERPRISE;Customer=Bath_and_Body_Works_TEST;Expiration=2025-Dec-31;Hash=jRhQNnIQYISNQl8MN0QV"
+# "Product=InsightEdge;Version=17.0;Type=ENTERPRISE;Customer=Bath_and_Body_Works_PROD;Expiration=2025-Dec-31;Hash=i9K5WfQQxNPOSqZSPPnN"
 # Enable openShift support by openshift: true
 
 global:
