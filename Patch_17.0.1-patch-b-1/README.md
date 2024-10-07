@@ -1,7 +1,6 @@
 # Upgrade DIH and xap-pu 17.0.1 to 17.0.1-patch-b-1
 
 ## Update the Private Registry Container
-*Images list place holder* 
 
 DIH and xap-pu images
 ```
@@ -60,7 +59,7 @@ cd scripts
 ## Upgrade DIH umbrella from 17.0.1 to 17.0.1-patch-b-1
 To upgrade dih umbrella run this command:
 ```
-helm upgrade --install dih <DIHREPO>/dih --version 17.0.1-patch-b-1 --namespace <NAMESPACE> -f ./dih_openshift_values.yaml
+helm upgrade --install dih <DIHREPO>/dih --version 17.0.1-patch-b-1 --namespace <NAMESPACE> -f dih-overrides.yaml
 ```
 Verify the dih components have upgraded.
 
@@ -78,7 +77,7 @@ Wait until all xap-pu pods terminate.
 
 ### Install xap-pu 17.0.1-patch-b-1
 ```
-helm install couponhub dih/xap-pu --version 17.0.1-patch-b-1 -n <NAMESPACE>> -f space_values.yaml
+helm install couponhub dih/xap-pu --version 17.0.1-patch-b-1 -n <NAMESPACE>> -f xap-pu-overrides.yaml
 ``` 
 Validate:
 * The xap-pu pods are running.
