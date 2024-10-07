@@ -1,5 +1,5 @@
-# image:
-#   repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/smart-cache-enterprise
+image:
+  repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/smart-cache-enterprise
 properties:
   - name: "space-config.engine.cache_policy"
     value: "4"
@@ -20,7 +20,7 @@ env:
 
 resources:
   limits:
-    memory: "8Gi"
+    memory: "10Gi"
 
 java:
   options: >
@@ -28,9 +28,14 @@ java:
    -Dcom.gigaspaces.logger.DeleteBackupPolicy.period=1 
    -Dspace-config.engine.query.result.size.limit=10000 
    -Dcom.gs.transport_protocol.lrmi.max-conn-pool=2048 
-   -Dcom.gs.transport_protocol.lrmi.max-threads=256 
+   -Dcom.gs.transport_protocol.lrmi.max-threads=256
+   -Dcom.gs.hsqldb.all-metrics-recording.enabled=false
+   -Dhsqldb.db.level=OFF
+   -Dgs.gc.collectionTimeThresholdWarning=1000
+   -XX:+DisableExplicitGC
+  heap: "8g"   
       
-partitions: 40
+partitions: 4
 ha: false
 
 # For openShift only
