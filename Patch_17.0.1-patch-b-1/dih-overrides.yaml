@@ -12,8 +12,8 @@ global:
     securityContext:
     imagePullSecrets: 
         - myregistrysecret
-    #image:
-      #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/bitnami/kubectl
+    image:
+      repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/bitnami/kubectl
       
       
     
@@ -54,8 +54,8 @@ flink:
 
 manager:
   license: "Product=InsightEdge;Version=17.0;Type=ENTERPRISE;Customer=Bath_and_Body_Works_DEV;Expiration=2025-Dec-31;Hash=YLZeVWP2S1ikMORZNNSQ"
-  #image:
-    #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/smart-cache-enterprise
+  image:
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/smart-cache-enterprise
   java:
   options: |
     -Dcom.gigaspaces.logger.RollingFileHandler.backup-policy=com.gigaspaces.logger.DeleteBackupPolicy
@@ -73,21 +73,20 @@ manager:
 
 operator:
   license: "Product=InsightEdge;Version=17.0;Type=ENTERPRISE;Customer=Bath_and_Body_Works_DEV;Expiration=2025-Dec-31;Hash=YLZeVWP2S1ikMORZNNSQ"
-  #podPolicyOrderedOnly: true
-  #image:
-    #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/cache-operator
-    #init:
-      #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/busybox
-  #openssl:
-    #image:
-      #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/alpine/openssl
+  image:
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/cache-operator
+    init:
+      repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/busybox
+  openssl:
+    image:
+      repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/alpine/openssl
 
 spacedeck:
   env:
   - name: HOSTS_DISABLED
     value: "true"
-  #image:
-    #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/spacedeck
+  image:
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/spacedeck
   resources:
     requests:
        memory: 1000Mi
@@ -99,10 +98,10 @@ spacedeck:
 influxdb:
   persistence:
     storageClass: azure-premium-zrs
-  #image:
-    #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/influxdb
-    #pullSecrets: 
-    #    - harborsecret
+  image:
+    repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/influxdb
+    pullSecrets: 
+        - myregistrysecret
   config:
     reporting_disabled: true 
   # set retention policy for influxdb
@@ -116,20 +115,20 @@ influxdb:
 
 grafana:
   securityContext: ""
-  #image:
-    #registry: harbor.hq.bbwcorp.com/bbw_omni_channel_it
-    #repository: giga/grafana
-  #sidecar:
-    #image:
-      #registry: harbor.hq.bbwcorp.com/bbw_omni_channel_it
-      #repository: giga/kiwigrid/k8s-sidecar
-  #testFramework:
-    #image:
-      #registry: harbor.hq.bbwcorp.com/bbw_omni_channel_it
-      #repository: giga/bats
+  image:
+    registry: harbor.hq.bbwcorp.com/bbw_omni_channel_it
+    repository: giga/grafana
+  sidecar:
+    image:
+      registry: harbor.hq.bbwcorp.com/bbw_omni_channel_it
+      repository: giga/kiwigrid/k8s-sidecar
+  testFramework:
+    image:
+      registry: harbor.hq.bbwcorp.com/bbw_omni_channel_it
+      repository: giga/bats
     
 service-operator:
-  enabled: true
+  enabled: false
   #image:
     #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/mcs-service-operator
 #    pullPolicy: Always
@@ -141,7 +140,7 @@ service-operator:
 
 
 service-creator:
-  enabled: true
+  enabled: false
   #image:
     #repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/gigaspaces/mcs-service-creator
 
