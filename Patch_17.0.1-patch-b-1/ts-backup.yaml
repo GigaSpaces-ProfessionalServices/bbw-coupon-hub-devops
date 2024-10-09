@@ -1,7 +1,6 @@
 # TODO: replace with private repository location
 #image:
 #  repository: gigaspaces/smart-cache-backup
-#  tag: 0.1
 
 # TODO: replace secret
 #imagePullSecrets:
