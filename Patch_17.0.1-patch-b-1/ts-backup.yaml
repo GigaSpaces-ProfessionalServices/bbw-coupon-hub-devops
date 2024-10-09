@@ -1,4 +1,13 @@
-storageClassName: azure-premium-zrs
-storage: 200Gi
-memory: 4Gi
-cpu: 0
+# TODO: replace with private repository location
+#image:
+#  repository: gigaspaces/smart-cache-backup
+#  tag: 0.1
+
+# TODO: replace secret
+#imagePullSecrets:
+#  - name: my-secret
+
+storageClassName:
+storage: 50Gi
+memory: 1Gi
+cpu: 1000m
