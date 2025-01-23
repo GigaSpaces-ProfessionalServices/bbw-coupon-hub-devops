@@ -40,6 +40,7 @@ java:
     -Dhsqldb.db.level=OFF
     -Dgs.gc.collectionTimeThresholdWarning=1000
     -XX:+DisableExplicitGC
+    -Dcom.gs.smart-externalizable.enabled=false
   heap: "8g"
   
 partitions: 4
