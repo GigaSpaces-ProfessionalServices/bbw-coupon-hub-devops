@@ -30,6 +30,7 @@ resources:
   limits:
     memory: "10Gi"
 
+# com.gs.smart-externalizable.enabled=false requires clients to have matching System Property set
 java:
   options: >
     -Dcom.gigaspaces.logger.RollingFileHandler.backup-policy=com.gigaspaces.logger.DeleteBackupPolicy
