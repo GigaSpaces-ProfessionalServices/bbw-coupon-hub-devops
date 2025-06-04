@@ -6,9 +6,11 @@
 # Enable openShift support by openshift: true
 
 global:
+# openshift
   openshift: true
   deleterJob:
     securityContext:
+# end openshift
   imagePullSecrets: 
     - harborsecret
     image:
@@ -111,7 +113,9 @@ influxdb:
     enabled: false
 
 grafana:
+# openshift
   securityContext: ""
+# end openshift
   image:
     registry: harbor.hq.bbwcorp.com/bbw_omni_channel_it
     repository: giga/grafana
