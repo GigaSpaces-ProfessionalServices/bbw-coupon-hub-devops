@@ -9,8 +9,8 @@ global:
   openshift: true
   deleterJob:
     securityContext:
-    imagePullSecrets: 
-        - harborsecret
+  imagePullSecrets: 
+    - harborsecret
     image:
       repository: harbor.hq.bbwcorp.com/bbw_omni_channel_it/giga/bitnami/kubectl
       
