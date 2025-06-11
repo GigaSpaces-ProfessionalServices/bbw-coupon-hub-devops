@@ -114,7 +114,8 @@ influxdb:
 
 grafana:
 # openshift
-  securityContext: ""
+# securityContext intentiionally empty
+  securityContext: 
 # end openshift
   image:
     registry: harbor.hq.bbwcorp.com/bbw_omni_channel_it
